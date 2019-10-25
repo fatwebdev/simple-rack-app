@@ -3,24 +3,15 @@ require_relative 'format_time'
 class Application
   def call(env)
     @request = Rack::Request.new(env)
-    puts @request.path_info
+    headers = { 'Content-Type' => 'text/plain' }
+
     if @request.path_info == '/time'
       format = @request.params['format'].split(',')
 
       status_code, response_body = FormatTime.new(format).call
-      response(status_code, response_body)
+      Rack::Response.new(response_body, status_code, headers)
     else
-      response(404, 'Not Found')
+      Rack::Response.new('Not Found', 404, headers)
     end
-  end
-
-  private
-
-  def response(code, text)
-    [
-      code,
-      { 'Content-Type' => 'text/plain' },
-      [text]
-    ]
   end
 end
