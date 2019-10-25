@@ -11,10 +11,11 @@ class FormatTime
   def initialize(formats)
     @template_string = ''
     @unknown = []
-    parser(formats)
+    @formats = formats
   end
 
   def call
+    parser
     if @unknown.empty?
       time
     else
@@ -26,20 +27,20 @@ class FormatTime
 
   def unknown_format
     [
-      400,
+      nil,
       "Unknown time format #{@unknown}"
     ]
   end
 
   def time
     [
-      200,
-      Time.now.strftime(@template_string)
+      Time.now.strftime(@template_string),
+      nil
     ]
   end
 
-  def parser(formats)
-    formats.each do |format|
+  def parser
+    @formats.each do |format|
       if FORMATS[format]
         @template_string += FORMATS[format]
       else
